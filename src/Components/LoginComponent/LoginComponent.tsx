@@ -57,13 +57,11 @@ export default class LoginComponent extends React.Component<Props, State> {
     const user = new User(name);
     const loginPromise: Promise<any> = user.getLoginPromise(password);
     loginPromise.then((response) => {
-      console.log('Success');
-      console.log(response);
-      user.setLoginFlag();
       this.props.setLoggedUser(user);
       this.props.closeLoginModal();
     }).catch((errResponse) => {
       console.log('Error');
+      console.log(errResponse);
     });
   }
   render() {

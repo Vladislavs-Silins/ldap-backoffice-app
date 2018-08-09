@@ -1,5 +1,6 @@
 {
   "dependencies": {
+    "debug": "registry:npm/debug#2.0.0+20170504163145",
     "react-bootstrap": "github:react-bootstrap/react-bootstrap-typescript/index.d.ts"
   }
 }

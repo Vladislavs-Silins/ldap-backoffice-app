@@ -6,6 +6,9 @@ import {
   DropdownMenu,
   DropdownItem
 } from 'reactstrap';
+import Can from './../CanComponent/CanComponent';
+import ability from '../../Config/ability';
+
 import './OptionsComponent.css'
 
 export interface Props {
@@ -33,16 +36,25 @@ export default class OptionsComponent extends React.Component<Props, State> {
             Options
                 </DropdownToggle>
           <DropdownMenu right>
+            <Can I="read" a="Mathematicians-data" ability={ability}>
+              <DropdownItem>
+                Mathematicians Secret Data
+              </DropdownItem>
+            </Can>
+            <Can I="read" a="Scientists-data" ability={ability}>
+              <DropdownItem>
+                Scientists Secret Data
+              </DropdownItem>
+            </Can>
+            <Can I="read" a="Chemists-data" ability={ability}>
+              <DropdownItem>
+                Chemists Secret Data
+              </DropdownItem>
+            </Can>
+            {/* <DropdownItem divider /> */}
             <DropdownItem>
-              Option 1
-                  </DropdownItem>
-            <DropdownItem>
-              Option 2
-                  </DropdownItem>
-            <DropdownItem divider />
-            <DropdownItem>
-              Reset
-                  </DropdownItem>
+              Common Data
+            </DropdownItem>
           </DropdownMenu>
         </UncontrolledDropdown></div>
     )

@@ -1,4 +1,5 @@
 import axios from 'axios';
+import ability from '../../Config/ability';
 
 // Class User for LDAP authorisation
 export default class User {
@@ -6,14 +7,12 @@ export default class User {
   name = '';
   email = '';
   fullName = '';
-  // groups that includes user as a member
-  groups: string[] = [];
 
-  // TO DO: destroy it, it is test construct
-  // we will get groups from server
+  // TODO: change it, it is test construct
+  // we will get permissions from server
   groupList: Map<string, string>;
 
-  private _isAuthorised = false;
+  private _isAuthorized = false;
 
   constructor(name?: string, password?: string) {
     this.name = name || '';
@@ -33,16 +32,16 @@ export default class User {
     this.groupList.set('jmacy', 'Scientists');
   }
 
-  isAuthorised() {
-    return this._isAuthorised;
+  isAuthorized() {
+    return this._isAuthorized;
   }
 
   setLoginFlag() {
-    this._isAuthorised = true;
+    this._isAuthorized = true;
   }
 
   clearLoginFlag() {
-    this._isAuthorised = false;
+    this._isAuthorized = false;
   }
 
   // Promise, that logged user in
@@ -51,13 +50,12 @@ export default class User {
       axios.get(`http://localhost:8080/ldapproxy/get?username=${this.name}&password=${password}`)
         .then((response) => {
 
-          //Get user data from server request
-          const data: { attribute: string, value: string }[] = response.data;
-          data.forEach((token) => {
+          // Get user data from server request
+          // We use destructuring assignment to receive it
+          const { data: { entity: { data: userData } } } = response;
+
+          userData.forEach((token: any) => {
             switch (token.attribute) {
-              case 'mail':
-                this.email = token.value[0];
-                break;
               case 'mail':
                 this.email = token.value[0];
                 break;
@@ -73,12 +71,19 @@ export default class User {
             }
           });
 
-          this.groups = [this.groupList.get(this.name) || ''];
+          // TODO: create more suitable permissions model
+          const group = this.groupList.get(this.name) || '';
 
+          ability.update([{
+            actions: ['read'],
+            subject: [`${group}-data`]
+          }]);
+
+          this.setLoginFlag();
           resolve(response);
         })
         .catch((errResponse) => {
-          reject(errResponse)
+          reject(errResponse);
         });
     });
   }
@@ -87,6 +92,7 @@ export default class User {
   static notAuthorizedUser(): User {
     const user = new User();
     user.clearLoginFlag();
+    ability.update([]);
     return user;
   };
 

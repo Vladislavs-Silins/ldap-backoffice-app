@@ -1,9 +1,9 @@
 import * as React from 'react';
-import './App.css';
-import User from './Model/User/User'
+// import './App.css';
+import User from '../../Model/User/User';
 
-import HeaderComponent from './Components/HeaderComponent/HeaderComponent';
-import LoginComponent from './Components/LoginComponent/LoginComponent';
+import HeaderComponent from '../../Components/HeaderComponent/HeaderComponent';
+import LoginComponent from '../../Components/LoginComponent/LoginComponent';
 
 export interface State {
   user: User,
@@ -18,10 +18,11 @@ class App extends React.Component {
   setLoggedUser = (user: User) => {
     this.setState(() => ({ user }));
   }
+  logout = () => {
+    this.setState(() => ({ user: User.notAuthorizedUser() }));
+  }
 
   setLoginModal(isModalVisible: boolean) {
-    console.log('setLogModal');
-
     this.setState(() => {
       return {
         isLoginModalVisible: isModalVisible
@@ -42,7 +43,7 @@ class App extends React.Component {
   public render() {
     return (
       <div className="App">
-        <HeaderComponent user={this.state.user} openLoginModal={this.openLoginModal} />
+        <HeaderComponent user={this.state.user} openLoginModal={this.openLoginModal} logout={this.logout} />
         <LoginComponent modalOpen={this.state.isLoginModalVisible} closeLoginModal={this.closeLoginModal} setLoggedUser={this.setLoggedUser} />
         {/* <LDAPComponent /> */}
       </div>
