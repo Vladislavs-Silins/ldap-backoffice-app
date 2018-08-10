@@ -8,28 +8,10 @@ export default class User {
   email = '';
   fullName = '';
 
-  // TODO: change it, it is test construct
-  // we will get permissions from server
-  groupList: Map<string, string>;
-
   private _isAuthorized = false;
 
   constructor(name?: string, password?: string) {
     this.name = name || '';
-    this.groupList = new Map();
-    this.groupList.set('curie', 'Chemists');
-    this.groupList.set('boyle', 'Chemists');
-    this.groupList.set('nobel', 'Chemists');
-    this.groupList.set('pasteur', 'Chemists');
-    this.groupList.set('euclid', 'Mathematicians');
-    this.groupList.set('riemann', 'Mathematicians');
-    this.groupList.set('euler', 'Mathematicians');
-    this.groupList.set('gauss', 'Mathematicians');
-    this.groupList.set('einstein', 'Scientists');
-    this.groupList.set('galieleo', 'Scientists');
-    this.groupList.set('tesla', 'Scientists');
-    this.groupList.set('newton', 'Scientists');
-    this.groupList.set('jmacy', 'Scientists');
   }
 
   isAuthorized() {
@@ -52,32 +34,35 @@ export default class User {
 
           // Get user data from server request
           // We use destructuring assignment to receive it
-          const { data: { entity: { data: userData } } } = response;
+          try {
+            const { data: { entity: { data: userData, orgUnit: [{ value: group }] } } } = response;
 
-          userData.forEach((token: any) => {
-            switch (token.attribute) {
-              case 'mail':
-                this.email = token.value[0];
-                break;
-              case 'uid':
-                this.name = token.value[0];
-                break;
-              case 'cn':
-                this.fullName = token.value[0];
-                break;
+            // get user info and fill object properties
+            userData.forEach((token: any) => {
+              switch (token.attribute) {
+                case 'mail':
+                  this.email = token.value[0];
+                  break;
+                case 'uid':
+                  this.name = token.value[0];
+                  break;
+                case 'cn':
+                  this.fullName = token.value[0];
+                  break;
+                default:
+                  break;
+              }
+            });
 
-              default:
-                break;
-            }
-          });
+            // Here we change permissions
+            ability.update([{
+              actions: ['read'],
+              subject: [`${group}-secret-data`]
+            }]);
 
-          // TODO: create more suitable permissions model
-          const group = this.groupList.get(this.name) || '';
-
-          ability.update([{
-            actions: ['read'],
-            subject: [`${group}-data`]
-          }]);
+          } catch (error) {
+            reject('Incorrect server data format');
+          }
 
           this.setLoginFlag();
           resolve(response);
@@ -91,7 +76,9 @@ export default class User {
   // Factory's static method - generate default null user without authorisation
   static notAuthorizedUser(): User {
     const user = new User();
+    // User is not logged
     user.clearLoginFlag();
+    // User have no permissions
     ability.update([]);
     return user;
   };

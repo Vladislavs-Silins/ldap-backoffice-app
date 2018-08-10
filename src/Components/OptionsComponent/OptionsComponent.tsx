@@ -36,17 +36,17 @@ export default class OptionsComponent extends React.Component<Props, State> {
             Options
                 </DropdownToggle>
           <DropdownMenu right>
-            <Can I="read" a="Mathematicians-data" ability={ability}>
+            <Can I="read" a="mathematicians-secret-data" ability={ability}>
               <DropdownItem>
                 Mathematicians Secret Data
               </DropdownItem>
             </Can>
-            <Can I="read" a="Scientists-data" ability={ability}>
+            <Can I="read" a="scientists-secret-data" ability={ability}>
               <DropdownItem>
                 Scientists Secret Data
               </DropdownItem>
             </Can>
-            <Can I="read" a="Chemists-data" ability={ability}>
+            <Can I="read" a="chemists-secret-data" ability={ability}>
               <DropdownItem>
                 Chemists Secret Data
               </DropdownItem>
